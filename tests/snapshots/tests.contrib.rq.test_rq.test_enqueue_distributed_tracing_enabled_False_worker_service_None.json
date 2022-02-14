@@ -8,20 +8,21 @@
     "parent_id": 0,
     "type": "worker",
     "meta": {
-      "job.id": "cb601426-9ba6-4ff7-baff-4af051664698",
+      "_dd.p.upstream_services": "cnEtd29ya2Vy|1|0|1.0000",
+      "job.id": "d2caf5bb-2b6b-485a-b433-8c837da6cc85",
       "job.origin": "q",
       "job.status": "finished",
-      "runtime-id": "9f7973a4da1d44a18c0117159fe67295"
+      "runtime-id": "080b42c9c02c422e8f23176f98abefcf"
     },
     "metrics": {
       "_dd.agent_psr": 1.0,
       "_dd.top_level": 1,
       "_dd.tracer_kr": 1.0,
       "_sampling_priority_v1": 1,
-      "system.pid": 67081
+      "system.pid": 64745
     },
-    "duration": 19190000,
-    "start": 1632150774362649000
+    "duration": 18933000,
+    "start": 1643292229987706000
   },
      {
        "name": "rq.job.perform",
@@ -31,10 +32,10 @@
        "span_id": 2,
        "parent_id": 1,
        "meta": {
-         "job.id": "cb601426-9ba6-4ff7-baff-4af051664698"
+         "job.id": "d2caf5bb-2b6b-485a-b433-8c837da6cc85"
        },
-       "duration": 3202000,
-       "start": 1632150774369990000
+       "duration": 4041000,
+       "start": 1643292229994861000
      }],
 [
   {
@@ -46,18 +47,19 @@
     "parent_id": 0,
     "type": "worker",
     "meta": {
+      "_dd.p.upstream_services": "cnE=|1|0|1.0000",
       "job.func_name": "tests.contrib.rq.jobs.job_add1",
-      "job.id": "cb601426-9ba6-4ff7-baff-4af051664698",
+      "job.id": "d2caf5bb-2b6b-485a-b433-8c837da6cc85",
       "queue.name": "q",
-      "runtime-id": "2fae27a28fd644a6bd2fbbd179813bd4"
+      "runtime-id": "7c92db5802324f2eb1fdfde7e319e88b"
     },
     "metrics": {
       "_dd.agent_psr": 1.0,
       "_dd.top_level": 1,
       "_dd.tracer_kr": 1.0,
       "_sampling_priority_v1": 1,
-      "system.pid": 67067
+      "system.pid": 64733
     },
-    "duration": 6343000,
-    "start": 1632150774020518000
+    "duration": 7306000,
+    "start": 1643292229322570000
   }]]
