@@ -185,6 +185,7 @@ Indices and tables
     configuration
     integrations
     basic_usage
+    api
     advanced_usage
     benchmarks
     contributing

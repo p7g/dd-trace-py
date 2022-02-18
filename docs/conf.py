@@ -81,6 +81,9 @@ author = u"Datadog, Inc."
 # document in order of source
 autodoc_member_order = "bysource"
 
+# autodoc typing hints
+autodoc_typehints = "description"
+
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -155,9 +158,7 @@ html_theme = "alabaster"
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-html_theme_options = {
-    "description": "Datadog's Python APM client",
-}
+html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []

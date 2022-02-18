@@ -1,0 +1,476 @@
+---
+prelude: >
+  The Datadog APM Python team is happy to announce the release of version 1.0.0
+  of ddtrace.
+
+
+  The first commit to the library was made on June 20, 2016. Nearly sixty minor
+  releases later, the library has grown immensely. The core tracing component
+  has been rewritten to address issues with asynchronous frameworks. The library
+  now includes over 60 integrations for libraries. Moreover, the library has
+  expanded out from tracing to support the Continuous Profiler, CI Visibility,
+  and Application Security.
+
+
+  Our motivations for this major version release were:
+
+    1. Clarify and simplify the public API.
+    2. Introduce a versioning policy.
+    3. Painless to upgrade from 0.x.
+
+  See the API for full details on the public API.
+
+
+  If users run tests with ddtrace enabled, convert all warnings to errors before upgrading to 1.0 to identify the relevant breaking changes::
+
+    PYTHONWARNINGS=error ddtrace-run ...
+    pytest -W ...
+
+
+  .. csv-table:: Upgrade from 0.x
+   :widths: 30, 50, 10
+   :header: "Action", "Name", "Notes"
+
+    Change,``ddtrace.Span.__init__``,:ref:`1.x<remove-span-init-tracer>`
+    Removal,``ddtrace.Span.meta``,:ref:`1.x<remove-span-meta>`
+    Removal,``ddtrace.Span.metrics``,:ref:`1.x<remove-span-metrics>`
+    Removal,``ddtrace.Span.set_meta``,:ref:`1.x<remove-span-set-meta>`
+    Removal,``ddtrace.Span.set_metas``,:ref:`1.x<remove-span-set-metas>`
+    Removal,``ddtrace.Span.pprint``,:ref:`1.x<remove-span-pprint>`
+    Removal,``ddtrace.Span.tracer``,:ref:`1.x<remove-span-tracer>`
+    Removal,``ddtrace.Tracer.debug_logging``,:ref:`1.x<remove-tracer-debug-logging>`
+    Removal,``ddtrace.Tracer.get_call_context``,:ref:`1.x<remove-tracer-get-call-context>`
+    Removal,``ddtrace.Tracer.tags``,:ref:`1.x<remove-tracer-tags>`
+    Removal,``ddtrace.Tracer.writer``,:ref:`1.x<remove-tracer-writer>`
+    Removal,``ddtrace.Tracer.__call__``
+    Removal,``ddtrace.Tracer.global_excepthook``
+    Removal,``ddtrace.Tracer.log``
+    Removal,``ddtrace.Tracer.priority_sampler``
+    Removal,``ddtrace.Tracer.sampler``
+    Removal,``ddtrace.Tracer.set_service_info``
+    Removal,``ddtrace.context.Context.clone``,:ref:`1.x<remove-clone-context>`
+    Removal,``DATADOG_*``,:ref:`1.x<remove-datadog-envs>`
+    Removal,``DATADOG_SERVICE_NAME``,:ref:`1.x<remove-legacy-service-name-envs>`
+    Change,``DD_CALL_BASIC_CONFIG``,":ref:`1.x<disable-basic-config-call-by-default>`, :ref:`Deprecation Note<deprecate-basic-config-call>`"
+    Removal,``DD_LOGGING_RATE_LIMIT``,:ref:`1.x<remove-logging-env>`
+    Removal,``DD_SERVICE_NAME``,:ref:`1.x<remove-legacy-service-name-envs>`
+    Removal,``DD_TRACER_PARTIAL_FLUSH_ENABLED``,:ref:`1.x<remove-partial-flush-enabled-env>`
+    Removal,``DD_TRACER_PARTIAL_FLUSH_MIN_SPANS``,:ref:`1.x<remove-partial-flush-min-envs>`
+    Removal,``ddtrace.compat``
+    Removal,``ddtrace.contrib.util``
+    Removal,``ddtrace.encoding``
+    Change,``ddtrace.ext.SpanTypes``,:ref:`1.x<span-types-enum>`
+    Removal,``ddtrace.ext.errors``,:ref:`1.x<remove-ext-errors>`
+    Removal,``ddtrace.ext.priority``,:ref:`1.x<remove-ext-priority>`
+    Removal,``ddtrace.ext.system``,:ref:`1.x<remove-ext-system>`
+    Removal,``ddtrace.helpers.get_correlation_ids``,:ref:`1.x<remove-helpers>`
+    Removal,``ddtrace.http``,:ref:`1.x<remove-http>`
+    Removal,``ddtrace.http.headers``,:ref:`1.x<remove-http>`
+    Removal,``ddtrace.monkey``
+    Removal,``ddtrace.propagation.utils``
+    Removal,``ddtrace.Sampler.default_sampler``
+    Removal,``ddtrace.settings.Config.HTTPServerConfig``
+    Removal,``ddtrace.util``
+    Removal,``ddtrace.utils``
+    Removal,``ddtrace.utils.attr``
+    Removal,``ddtrace.utils.attrdict``
+    Removal,``ddtrace.utils.cache``
+    Removal,``ddtrace.utils.config``
+    Removal,``ddtrace.utils.deprecation``
+    Removal,``ddtrace.utils.formats``
+    Removal,``ddtrace.utils.http``
+    Removal,``ddtrace.utils.importlib``
+    Removal,``ddtrace.utils.time``
+    Removal,``ddtrace.utils.version``
+    Removal,``ddtrace.utils.wrappers``
+    Removal,``ddtrace.contrib.cassandra.get_traced_cassandra``, :ref:`Integrations<api-integrations>`
+    Removal,``ddtrace.contrib.celery.patch_task``,see :ref:`Integrations<api-integrations>`
+    Removal,``ddtrace.contrib.celery.unpatch_task``,see :ref:`Integrations<api-integrations>`
+    Removal,``ddtrace.contrib.mongoengine.trace_mongoengine``,see :ref:`Integrations<api-integrations>`
+    Removal,``ddtrace.contrib.mysql.get_traced_mysql_connection``,see :ref:`Integrations<api-integrations>`
+    Removal,``ddtrace.contrib.psycopg.connection_factory``,see :ref:`Integrations<api-integrations>`
+    Removal,``ddtrace.contrib.requests.legacy``,see :ref:`Integrations<api-integrations>`
+    Removal,``ddtrace.contrib.sqlite3.connection_factory``,see :ref:`Integrations<api-integrations>`
+
+deprecations:
+  - ".. _deprecate-basic-config-call:
+
+
+    ``DD_CALL_BASIC_CONFIG`` is deprecated.
+
+    "
+  - '.. _deprecate-constants_0:
+
+
+    ``ddtrace.constants.FILTERS_KEY`` is deprecated. Use ``settings={"FILTERS": ...}``
+    instead when calling ``tracer.configure``.
+
+    '
+  - ".. _deprecate-constants_1:
+
+
+    ``ddtrace.constants.NUMERIC_TAGS`` is deprecated.
+
+    "
+  - ".. _deprecate-constants_2:
+
+
+    ``ddtrace.constants.LOG_SPAN_KEY`` is deprecated.
+
+    "
+  - ".. _deprecate-pin-app_0:
+
+
+    ``Pin.app`` is deprecated.
+
+    "
+  - ".. _deprecate-span-tracer-master_0:
+
+
+    :py:attr:`ddtrace.Span.tracer` is deprecated.
+
+    "
+  - ".. _deprecate-tracer-log-attribute_0:
+
+
+    :py:attr:`ddtrace.Tracer.log` is deprecated. Use :py:data:`ddtrace.tracer.log` instead.
+
+    "
+  - ".. _deprecate-tracer-sampler-attribute_0:
+
+
+    :py:attr:`ddtrace.Tracer.sampler` is deprecated.
+
+    "
+  - ".. _deprecate-tracer-sampler-attribute_1:
+
+
+    :py:attr:`ddtrace.Tracer.priority_sampler` is deprecated.
+
+    "
+  - ".. _deprecate-tracer-tags-attribute_0:
+
+
+    :py:attr:`ddtrace.Tracer.tags` is deprecated. Use the environment variable :ref:`DD_TAGS<dd-tags>`
+    to set the global tags instead.
+
+    "
+upgrade:
+  - ".. _disable-basic-config-call-by-default:
+
+
+    Default value of ``DD_CALL_BASIC_CONFIG`` was updated from ``True`` to ``False``.
+    Call ``logging.basicConfig()`` to configure logging in your application.
+
+    "
+  - ".. _span-types-enum:
+
+
+    ``ddtrace.ext.SpanTypes`` is no longer an ``Enum``. Use ``SpanTypes.TYPE`` instead of ``SpanTypes.TYPE.value``.
+
+    "
+  - ".. _remove-span-meta:
+
+
+    ``ddtrace.Span.meta`` is removed. Use :py:meth:`ddtrace.Span.get_tag`
+    and :py:meth:`ddtrace.Span.set_tag` instead.
+
+    "
+  - ".. _remove-span-metrics:
+
+
+    ``ddtrace.Span.metrics`` is removed. Use :py:meth:`ddtrace.Span.get_metric`
+    and :py:meth:`ddtrace.Span.set_metric` instead.
+
+    "
+  - ".. _remove-span-init-tracer:
+
+
+    The deprecated `tracer` argument is removed from :py:meth:`ddtrace.Span.__init__`.
+
+    "
+  - ".. _1.0-remove-default-sampler_0:
+
+
+    ``ddtrace.Sampler.default_sampler`` is removed.
+
+    "
+  - ".. _internalize_http_server_0:
+
+
+    ``ddtrace.settings.Config.HTTPServerConfig`` was removed from the public api.
+
+    "
+  - ".. _remove-cassandra-traced:
+
+
+    contrib/cassandra: ``get_traced_cassandra`` is removed. Use ``ddtrace.patch(cassandra=True)`` or ``ddtrace.patch_all()`` instead.
+
+    "
+  - ".. _remove-celery-patch-task:
+
+
+    celery: ``ddtrace.contrib.celery.patch_task`` is removed.
+    Use ``ddtrace.patch(celery=True)`` or ``ddtrace.patch_all()`` instead.
+
+    "
+  - ".. _remove-celery-unpatch-task:
+
+
+    celery: ``ddtrace.contrib.celery.unpatch_task`` is removed.
+    Use ``ddtrace.contrib.celery.unpatch()`` instead.
+
+    "
+  - ".. _remove-clone-context:
+
+
+    ``ddrace.context.Context.clone`` is removed. This is no longer needed since the
+    tracer now supports asynchronous frameworks out of the box.
+
+    "
+  - ".. _remove-contrib-util_0:
+
+
+    The deprecated module ``ddtrace.contrib.util`` is removed.
+
+    "
+  - ".. _remove-ddtrace-compat_0:
+
+
+    The deprecated module ``ddtrace.compat`` is removed.
+
+    "
+  - ".. _remove-ddtrace-encoding_0:
+
+
+    The deprecated module ``ddtrace.encoding`` is removed.
+
+    "
+  - ".. _remove-span-set-meta:
+
+
+    ``ddtrace.Span.set_meta`` is removed. Use :py:meth:`ddtrace.Span.set_tag`
+    instead.
+
+    "
+  - ".. _remove-span-set-metas:
+
+
+    ``ddtrace.Span.set_metas`` is removed. Use :py:meth:`ddtrace.Span.set_tags`
+    instead.
+
+    "
+  - ".. _remove-http:
+
+
+    The deprecated modules ``ddtrace.http`` and ``ddtrace.http.headers`` are removed.
+    Use ``ddtrace.contrib.trace_utils.set_http_meta`` to store request and response
+    headers on a span.
+
+    "
+  - ".. _remove-ddtrace-install-excepthooks_0:
+
+
+    Remove deprecated ``ddtrace.install_excepthook``.
+
+    "
+  - ".. _remove-ddtrace-install-excepthooks_1:
+
+
+    Remove deprecated ``ddtrace.uninstall_excepthook``.
+
+    "
+  - ".. _remove-ddtrace-monkey_0:
+
+
+    The deprecated module ``ddtrace.monkey`` is removed. Use :py:func:`ddtrace.patch <ddtrace.patch>`
+    or :py:func:`ddtrace.patch_all <ddtrace.patch_all>` instead.
+
+    "
+  - ".. _remove-ddtrace-propagation-utils_0:
+
+
+    The deprecated module ``ddtrace.propagation.utils`` is removed.
+
+    "
+  - ".. _remove-ddtrace-utils_0:\n\nThe deprecated module ``ddtrace.utils`` and its
+    submodules are removed:\n  - ``ddtrace.utils.attr``\n  - ``ddtrace.utils.attrdict``\n
+    \ - ``ddtrace.utils.cache``\n  - ``ddtrace.utils.config``\n  - ``ddtrace.utils.deprecation``\n
+    \ - ``ddtrace.utils.formats``\n  - ``ddtrace.utils.http``\n  - ``ddtrace.utils.importlib``\n
+    \ - ``ddtrace.utils.time``\n  - ``ddtrace.utils.version``\n  - ``ddtrace.utils.wrappers``\n"
+  - ".. _remove-tracer-sampler:
+
+
+    ``ddtrace.Tracer.sampler`` is removed.
+
+    "
+  - ".. _remove-tracer-priority-sampler:
+
+
+    ``ddtrace.Tracer.priority_sampler`` is removed.
+
+    "
+  - ".. _remove-tracer-tags:
+
+
+    ``ddtrace.Tracer.tags`` is removed. Use the environment variable :ref:`DD_TAGS<dd-tags>`
+    to set the global tags instead.
+
+    "
+  - ".. _remove-deprecated-tracer-attributes_3:
+
+
+    :py:attr:`ddtrace.Tracer.log` was removed.
+
+    "
+  - ".. _remove-ext-errors:\n\nThe deprecated module ``ddtrace.ext.errors`` is removed.
+    Use the ``ddtrace.constants`` module instead::\n\n  from ddtrace.constants import
+    ERROR_MSG\n  from ddtrace.constants import ERROR_STACK\n  from ddtrace.constants
+    import ERROR_TYPE\n"
+  - ".. _remove-ext-priority:\n\nThe deprecated module ``ddtrace.ext.priority`` is
+    removed. Use the ``ddtrace.constants`` module instead for setting sampling priority
+    tags::\n\n  from ddtrace.constants import USER_KEEP\n  from ddtrace.constants import
+    USER_REJECT\n"
+  - ".. _remove-ext-system:
+
+
+    The deprecated module ``ddtrace.ext.system`` is removed. Use ``ddtrace.constants.PID``
+    instead.
+
+    "
+  - ".. _remove-helpers:
+
+
+    The deprecated method ``ddtrace.helpers.get_correlation_ids`` is removed. Use :py:meth:`ddtrace.Tracer.get_log_correlation_context`
+    instead.
+
+    "
+  - ".. _remove-legacy-service-name-envs:
+
+
+    The legacy environment variables ``DD_SERVICE_NAME`` and ``DATADOG_SERVICE_NAME``
+    are removed. Use ``DD_SERVICE`` instead.
+
+    "
+  - ".. _remove-mongoengine-traced_0:
+
+
+    mongoengine: The deprecated method ``ddtrace.contrib.mongoengine.trace_mongoengine``
+    is removed. Use ``ddtrace.patch(mongoengine=True)`` or ``ddtrace.patch()`` instead.
+
+    "
+  - ".. _remove-mysql-legacy_0:
+
+
+    mysql: The deprecated method ``ddtrace.contrib.mysql.get_traced_mysql_connection``
+    is removed. Use ``ddtrace.patch(mysql=True)`` or ``ddtrace.patch_all()`` instead.
+
+    "
+  - ".. _remove-pin-app-apptype_0:
+
+
+    The deprecated properties ``Pin.app`` and ``Pin.app_type`` are removed.
+
+    "
+  - ".. _remove-psycopg-factory_0:
+
+
+    psycopg: ``ddtrace.contrib.psycopg.connection_factory`` is removed. Use ``ddtrace.patch(psycopg=True)``
+    or ``ddtrace.patch_all()`` instead.
+
+    "
+  - ".. _remove-requests-legacy-distributed_0:
+
+
+    requests: The legacy distributed tracing is removed. Use :ref:`ddtrace.config.requests['distributed_tracing']<requests-config-distributed-tracing>`
+    instead.
+
+    "
+  - ".. _remove-span-pprint:
+
+
+    ``ddtrace.Span.pprint`` is removed.
+
+    "
+  - ".. _remove-span-tracer:
+
+
+    ``Span.tracer`` is removed.
+
+    "
+  - ".. _remove-sqlite3-connection_0:
+
+
+    sqlite3: ``ddtrace.contrib.sqlite3.connection_factory`` is removed. Use ``ddtrace.patch(sqlite3=True)``
+    or ``ddtrace.patch_all()`` instead.
+
+    "
+  - ".. _remove-tracer-debug-logging:\n\nRemove deprecated attribute ``ddtrace.Tracer.debug_logging``.
+    Set the logging level for the ``ddtrace.tracer`` logger instead::\n\n  import logging\n
+    \ log = logging.getLogger(\"ddtrace.tracer\")\n  log.setLevel(logging.DEBUG)\n"
+  - ".. _remove-tracer-call:
+
+
+    ``ddtrace.Tracer.__call__`` is removed.
+
+    "
+  - ".. _remove-tracer-global-excepthook:
+
+
+    ``ddtrace.Tracer.global_excepthook`` is removed.
+
+    "
+  - ".. _remove-tracer-get-call-context:
+
+
+    ``ddtrace.Tracer.get_call_context`` is removed. Use :py:meth:`ddtrace.Tracer.current_trace_context`
+    instead.
+
+    "
+  - ".. _remove-tracer-set-service-info:
+
+
+    ``ddtrace.Tracer.set_service_info`` is removed.
+
+    "
+  - ".. _remove-tracer-writer:
+
+
+    ``ddtrace.Tracer.writer`` is removed. To force flushing of buffered traces
+    to the agent, use :py:meth:`ddtrace.Tracer.flush` instead.
+
+    "
+  - ".. _remove-datadog-envs:
+
+
+    The environment variables prefixed with ``DATADOG_`` are removed. Use
+    environment variables prefixed with ``DD_`` instead.
+
+    "
+  - ".. _remove-logging-env:
+
+
+    The environment variable ``DD_LOGGING_RATE_LIMIT`` is removed. Use ``DD_TRACE_LOGGING_RATE``
+    instead.
+
+    "
+  - ".. _remove-partial-flush-enabled-env:
+
+
+    The environment variable ``DD_TRACER_PARTIAL_FLUSH_ENABLED`` is removed.
+    Use ``DD_TRACE_PARTIAL_FLUSH_ENABLED`` instead.
+
+    "
+  - ".. _remove-partial-flush-min-envs:
+
+
+    The environment variable ``DD_TRACER_PARTIAL_FLUSH_MIN_SPANS`` is removed.
+    Use ``DD_TRACE_PARTIAL_FLUSH_MIN_SPANS`` instead.
+
+    "
+  - ".. _removed_ddtrace.util.py_0:
+
+
+    ``ddtrace.util`` is removed.
+
+    "
